@@ -8,7 +8,6 @@ import os
 
 SUPABASE_URL = os.environ.get('SUPABASE_URL')
 SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
-
 class SupabaseAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
         auth_header = request.META.get('HTTP_AUTHORIZATION')
@@ -16,10 +15,8 @@ class SupabaseAuthentication(authentication.BaseAuthentication):
             return None
             
         try:
-            # Get the JWT token
             token = auth_header.split(' ')[1]
             
-            # Make a request to Supabase to validate the token
             user_response = requests.get(
                 f"{SUPABASE_URL}/auth/v1/user",
                 headers={
@@ -29,20 +26,27 @@ class SupabaseAuthentication(authentication.BaseAuthentication):
             )
             
             if user_response.status_code != 200:
+                print(user_response)
                 raise exceptions.AuthenticationFailed('Invalid token')
                 
             user_data = user_response.json()
             
-            # Get or create a Django user
+            django_user = None
             try:
-                user = User.objects.get(username=user_data['email'])
+                django_user = User.objects.get(username=user_data['email'])
+                print(f"Django User found: {django_user.username}")
             except User.DoesNotExist:
-                user = User.objects.create(
+                print(f"Django User not found, creating new user: {user_data['email']}") # DEBUG
+                django_user = User.objects.create(
                     username=user_data['email'],
                     email=user_data['email']
                 )
-                
-            return (user, token)
+                print(f"Django User created: {django_user.username}")
+            
+            # attach Supabase user ID to the Django user
+            django_user.supabase_id = user_data.get('id') # where user_data['id'] is the supabase uuid
+
+            return (django_user, token)
         except Exception as e:
             raise exceptions.AuthenticationFailed(f'Invalid token: {str(e)}')
             

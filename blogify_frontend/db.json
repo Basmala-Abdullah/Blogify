@@ -1,0 +1,18 @@
+{
+    "products":[
+        {"id": 0 , "name":"Large Burger", "count":0,"price":50,"isInCart":false,"category": 1  },
+        {"id": 1, "name":"Large Fries", "count":0,"price":20,"isInCart":false,"category": 2  },
+        {"id": 2 , "name":"Large Water", "count":0,"price":10,"isInCart":false,"category": 3  },
+        {"id": 3 , "name":"Burger", "count":0,"price":50,"isInCart":false,"category": 1  },
+        {"id": 4, "name":"Fries", "count":0,"price":20,"isInCart":false,"category": 2 },
+        {"id": 5 , "name":"Water", "count":0,"price":10,"isInCart":false,"category": 3  },
+        {"id": 6 , "name":"Small Burger", "count":0,"price":50,"isInCart":false,"category": 1  },
+        {"id": 7, "name":"Small Fries", "count":0,"price":20,"isInCart":false,"category": 2  },
+        {"id": 8 , "name":"Small Water", "count":0,"price":10,"isInCart":false,"category": 3  }
+    ],
+    "categories":[
+        {"id": 1 , "name":"Burger" },
+        {"id": 2, "name":"Fries" },
+        {"id": 3 , "name":"Water" }   
+    ]
+}

@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../components/Auth/AuthContext';
 import ImageUpload from '../components/Posts/ImageUpload';
-import { createPost } from '../services/supabaseClient';
+import { createPost } from '../services/apiService';
 
 export default function PostCreate() {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +21,10 @@ export default function PostCreate() {
     handleSubmit,
     formState: { errors },
   } = useForm();
-
+  if ( !user) {
+    navigate('/login');
+    return;
+  }
 
   const onSubmit = async (data) => {
     setIsLoading(true);

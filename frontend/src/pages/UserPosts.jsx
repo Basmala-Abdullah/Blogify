@@ -1,6 +1,6 @@
 import React from 'react'
 import { useEffect, useState } from 'react';
-import { getUserPosts } from '../services/supabaseClient'
+import { getUserPosts } from '../services/apiService'
 import { useAuth } from '../components/Auth/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import PostItem from '../components/Posts/PostItem';
@@ -26,6 +26,7 @@ export default function UserPosts() {
             try {
                 const { data, error } = await getUserPosts(user.id);
                 if (error) throw error;
+                console.log(data)
                 setPosts(data || []);
             } catch (err) {
                 console.error('Error fetching posts:', err);

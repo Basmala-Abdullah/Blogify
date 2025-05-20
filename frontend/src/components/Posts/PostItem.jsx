@@ -1,7 +1,7 @@
 import React from 'react'
 import { useAuth } from '../Auth/AuthContext';
 import { Link } from 'react-router-dom';
-import { deletePost } from '../../services/supabaseClient';
+import { deletePost } from '../../services/apiService';
 import { useState } from 'react';
 
 export default function PostItem({post, onDelete}) {
@@ -65,7 +65,7 @@ export default function PostItem({post, onDelete}) {
               <h2 className="text-xl font-semibold text-gray-900">
                 {post.title}
               </h2>
-              <p className="mt-2 text-gray-600 line-clamp-2">
+              <p className="mt-2 text-gray-600">
                 {post.content}
               </p>
             </div>

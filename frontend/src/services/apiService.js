@@ -112,7 +112,7 @@ export const getUserPosts = async (user_id) => {
   try {
     const token = await getAuthToken();
     
-    const response = await fetch(`${API_BASE_URL}/posts/user/${user_id}`, {
+    const response = await fetch(`${API_BASE_URL}/posts/user/${user_id}/`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }

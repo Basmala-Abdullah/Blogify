@@ -30,48 +30,55 @@ export const getCurrentUser = async () => {
   return { user: data?.user, error }
 }
 
-//supabase database (posts CRUD operations)
-
-export const getAllPosts = async (page = 1, pageSize = 5) => {
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
-
-  const { data, error, count } = await supabase
-    .from('posts')
-    .select('*, user_profiles:author(username)', { count: 'exact' })
-    .order('created_at', { ascending: false })
-    .range(from, to);
-  
-  return { 
-    data, 
-    error,
-    totalCount: count,
-    currentPage: page,
-    totalPages: Math.ceil(count / pageSize)
-  };
-}
-
-export const getUserPosts = async (user_id) => {
-  const { data, error } = await supabase.from('posts').select('*').eq('author', user_id).order('updated_at', { ascending: false });
-  return { data, error };
-}
-
-export const getPostById = async (id) => {
-  const {data, error} = await supabase.from('posts').select('*').eq('id',id).single() //single is same for first but in supabase db
-  return {data, error}
-}
-
-export const createPost = async(createdPost) =>{
-  const {data, error}=await supabase.from('posts').insert([createdPost]).select()
-  return {data, error}
-}
-
-export const updatePost = async (id, updatedPostData) => {
-  const { data, error } = await supabase.from('posts').update(updatedPostData).eq('id',id)
+export const resetPassword = async (email) => {
+  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/reset-password`,
+  })
   return { data, error }
 }
 
-export const deletePost = async (id) => {
-  const { error } = await supabase.from('posts').delete().eq('id',id)
-  return { error }
-}
+//supabase database (posts CRUD operations)
+
+// export const getAllPosts = async (page = 1, pageSize = 5) => {
+//   const from = (page - 1) * pageSize;
+//   const to = from + pageSize - 1;
+
+//   const { data, error, count } = await supabase
+//     .from('posts')
+//     .select('*, user_profiles:author(username)', { count: 'exact' })
+//     .order('created_at', { ascending: false })
+//     .range(from, to);
+  
+//   return { 
+//     data, 
+//     error,
+//     totalCount: count,
+//     currentPage: page,
+//     totalPages: Math.ceil(count / pageSize)
+//   };
+// }
+
+// export const getUserPosts = async (user_id) => {
+//   const { data, error } = await supabase.from('posts').select('*').eq('author', user_id).order('updated_at', { ascending: false });
+//   return { data, error };
+// }
+
+// export const getPostById = async (id) => {
+//   const {data, error} = await supabase.from('posts').select('*').eq('id',id).single() //single is same for first but in supabase db
+//   return {data, error}
+// }
+
+// export const createPost = async(createdPost) =>{
+//   const {data, error}=await supabase.from('posts').insert([createdPost]).select()
+//   return {data, error}
+// }
+
+// export const updatePost = async (id, updatedPostData) => {
+//   const { data, error } = await supabase.from('posts').update(updatedPostData).eq('id',id)
+//   return { data, error }
+// }
+
+// export const deletePost = async (id) => {
+//   const { error } = await supabase.from('posts').delete().eq('id',id)
+//   return { error }
+// }

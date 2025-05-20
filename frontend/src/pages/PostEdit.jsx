@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { useAuth } from '../components/Auth/AuthContext';
 import ImageUpload from '../components/Posts/ImageUpload';
-import { updatePost, getPostById } from '../services/supabaseClient';
+import { updatePost, getPostById } from '../services/apiService';
 
 export default function PostEdit() {
     const { id: postId } = useParams();
@@ -28,7 +28,7 @@ export default function PostEdit() {
       const fetchPost = async () => {
         try {
           const { data, error } = await getPostById(postId);
-          
+          console.log(data)
           if (error) throw error;
           
           if (data) {
@@ -53,7 +53,10 @@ export default function PostEdit() {
     
   }, [postId, user, navigate, setValue]);
 
-
+    if ( !user) {
+            navigate('/login');
+            return;
+    }
   const onSubmit = async (data) => {
     setIsLoading(true);
     setError('');

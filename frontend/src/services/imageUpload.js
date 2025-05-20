@@ -40,18 +40,17 @@ export const uploadImage = async (file) => {
 export const validateImageFile = (file) => {
   const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
   
-  // Check MIME type
   if (!file.type.startsWith('image/')) {
     return { valid: false, error: 'Please select an image file.' };
   }
 
-  // Check file extension
+  // check file extension
   const extension = file.name.split('.').pop().toLowerCase();
   if (!allowedExtensions.includes(extension)) {
     return { valid: false, error: 'Invalid file extension. Allowed: jpg, jpeg, png, gif, webp.' };
   }
   
-  // Check file size (limit to 2MB)
+  // check file size (limit to 2MB)
   if (file.size > 2 * 1024 * 1024) {
     return { valid: false, error: 'Image size should be less than 2MB.' };
   }

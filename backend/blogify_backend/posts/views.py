@@ -34,7 +34,7 @@ class IsAuthorOrReadOnlyForSupabase(permissions.BasePermission):
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 5
     page_size_query_param = 'page_size'
-    max_page_size = 20
+    #max_page_size = 20
 
 class PostListCreate(generics.GenericAPIView):
     # queryset = Post.objects.all()
@@ -48,7 +48,7 @@ class PostListCreate(generics.GenericAPIView):
         try:
             api_response = supabase.table('posts').select('*').order('created_at', desc=True).execute()
             
-            # Apply pagination
+            #pagination
             page = self.paginate_queryset(api_response.data if api_response.data is not None else [])
             if page is not None:
                 return self.get_paginated_response(page)
@@ -172,7 +172,7 @@ class PostRetrieveUpdateDestroy(generics.GenericAPIView):
 
 class UserPostsView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    
+    queryset = []  
     def get(self, request, user_id, *args, **kwargs):
         try:
             # fetch posts by the specified user_id

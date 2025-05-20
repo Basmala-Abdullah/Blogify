@@ -1,9 +1,10 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import { getAllPosts } from '../../services/supabaseClient.js'
+import { getAllPosts } from '../../services/apiService'
 import { useAuth } from '../Auth/AuthContext';
 import { Link } from 'react-router-dom';
 import PostItem from './PostItem.jsx'
+import clockIcon from '../../assets/clock.svg';
 
 export default function PostList() {
     const [posts, setPosts] = useState([]);
@@ -19,10 +20,13 @@ export default function PostList() {
       const fetchPosts = async (page) => {
           setIsLoading(true);
           try {
-              const { data, error, totalPages: pages } = await getAllPosts(page);
+              const { data, error } = await getAllPosts(page);
               if (error) throw error;
-              setPosts(data);
-              setTotalPages(pages);
+              console.log( data)
+              const pageSize = 5;
+              const calculatedTotalPages = Math.ceil(data.count / pageSize);
+              setPosts(data.results);
+              setTotalPages(calculatedTotalPages);
               setCurrentPage(page);
           } catch (error) {
               console.error("Failed to load posts", error);
@@ -36,7 +40,14 @@ export default function PostList() {
     }, [currentPage]);
 
     const handlePostDelete = (deletedPostId) => {
-        setPosts(posts.filter(post => post.id !== deletedPostId));
+        //setPosts(posts.filter(post => post.id !== deletedPostId));
+        const updatedPosts = posts.filter(post => post.id !== deletedPostId);
+        if (currentPage > 1 && updatedPosts.length === 0) {
+            setCurrentPage(currentPage - 1);
+        } else {
+            setPosts(updatedPosts);
+        }
+
     };
 
     const handlePageChange = (newPage) => {
@@ -54,9 +65,9 @@ export default function PostList() {
     }
 
     return (
-        <div className="space-y-6 mt-6 ml-3 flex flex-col items-center">
+        <div className="space-y-6 mt-6 ml-3 flex flex-col items-center mb-4">
             <div className="space-y-6 w-full max-w-4xl">
-                <h1 className="text-3xl font-bold">Latest Posts</h1>
+                <h1 className="text-3xl font-bold"><img src={clockIcon} alt="Edit" className="w-7 h-7 inline-block mr-2" />Latest Posts</h1>
                 
                 {error && (
                     <div className="alert alert-error shadow-lg">
@@ -76,7 +87,7 @@ export default function PostList() {
                             <PostItem key={post.id} post={post} onDelete={handlePostDelete} />
                         ))}
 
-                        {/* Pagination Controls */}
+                        {/*pagination*/}
                         <div className="flex justify-center items-center space-x-4 mt-8">
                             <button
                                 onClick={() => handlePageChange(currentPage - 1)}

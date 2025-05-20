@@ -32,7 +32,7 @@ export default function RegisterForm() {
         throw error;
       }
       
-      setSuccessMessage('Registration successful! You can now sign in.');
+      setSuccessMessage('Registration successful! A verification email has been sent. Please check your inbox.');
       setTimeout(() => {
         navigate('/login');
       }, 2000);

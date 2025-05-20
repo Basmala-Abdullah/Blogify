@@ -9,6 +9,7 @@ from datetime import datetime
 # from .serializers import UserSerializer, PostSerializer
 from rest_framework import generics
 from supabase_client import supabase
+from rest_framework.pagination import PageNumberPagination
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -30,20 +31,34 @@ class IsAuthorOrReadOnlyForSupabase(permissions.BasePermission):
             return True
         return False
 
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 5
+    page_size_query_param = 'page_size'
+    max_page_size = 20
+
 class PostListCreate(generics.GenericAPIView):
     # queryset = Post.objects.all()
     # serializer_class = PostSerializer
     queryset = []  #Empty list -> fixed a bug, we needed an empty set for queryset but not that got from the local db
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    def get(self, request, *args, **kwargs): #list all posts from Supabase
+    pagination_class = StandardResultsSetPagination
+
+    def get(self, request, *args, **kwargs):
         try:
             api_response = supabase.table('posts').select('*').order('created_at', desc=True).execute()
-            return Response(api_response.data if api_response.data is not None else [], status=status.HTTP_200_OK)
-
+            
+            # Apply pagination
+            page = self.paginate_queryset(api_response.data if api_response.data is not None else [])
+            if page is not None:
+                return self.get_paginated_response(page)
+                
+            return Response(api_response.data if api_response.data is not None else [], 
+                          status=status.HTTP_200_OK)
         except Exception as e:
-            return Response({"error": "An unexpected error occurred while listing posts", "details": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+            return Response({"error": "An unexpected error occurred while listing posts", 
+                          "details": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
     def post(self, request, *args, **kwargs): #create a new post in Supabase
         title = request.data.get('title')
         content = request.data.get('content')
@@ -56,11 +71,13 @@ class PostListCreate(generics.GenericAPIView):
             return Response({"error": "User authentication failed or Supabase ID missing"}, status=status.HTTP_401_UNAUTHORIZED)
         
         supabase_user_id = request.user.supabase_id
+        supabase_user_username= request.user.email.split('@')[0]
 
         post_data_to_insert = {
             'title': title,
             'content': content,
             'author': supabase_user_id ,
+            'author_username':supabase_user_username,
             'updated_at': datetime.utcnow().isoformat()
         }
 
@@ -151,3 +168,23 @@ class PostRetrieveUpdateDestroy(generics.GenericAPIView):
         except Exception as e:
             print(f"Exception deleting post {pk}: {e}")
             return Response({"error": "An unexpected error occurred while deleting the post"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class UserPostsView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+    def get(self, request, user_id, *args, **kwargs):
+        try:
+            # fetch posts by the specified user_id
+            api_response = supabase.table('posts') \
+                .select('*') \
+                .eq('author', user_id) \
+                .order('updated_at', desc=True) \
+                .execute()
+            
+            return Response(api_response.data if api_response.data is not None else [], 
+                          status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": "An unexpected error occurred while fetching user posts", "details": str(e)}, 
+                          status=status.HTTP_500_INTERNAL_SERVER_ERROR)

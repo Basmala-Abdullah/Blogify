@@ -5,6 +5,7 @@ import jwt
 import requests
 from django.conf import settings
 import os
+from supabase_client import supabase
 
 SUPABASE_URL = os.environ.get('SUPABASE_URL')
 SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
@@ -30,7 +31,20 @@ class SupabaseAuthentication(authentication.BaseAuthentication):
                 raise exceptions.AuthenticationFailed('Invalid token')
                 
             user_data = user_response.json()
-            
+            user_to_insert={
+                'username': user_data['email'].split('@')[0],
+            }
+            try:
+                api_response = supabase.table('user_profiles').insert(user_to_insert).execute()
+
+                if api_response.data and len(api_response.data) > 0:
+                    print(api_response.data[0])
+                else:
+                    print({"error": "Failed to create post, unexpected response from Supabase."})
+
+            except Exception as e:
+                print({"error": "An unexpected error occurred while creating the post", "details": str(e)})
+
             django_user = None
             try:
                 django_user = User.objects.get(username=user_data['email'])

@@ -28,7 +28,7 @@ export default function PostEdit() {
       const fetchPost = async () => {
         try {
           const { data, error } = await getPostById(postId);
-          console.log(data)
+          //console.log(data)
           if (error) throw error;
           
           if (data) {

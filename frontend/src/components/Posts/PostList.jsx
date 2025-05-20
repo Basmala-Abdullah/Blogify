@@ -22,7 +22,7 @@ export default function PostList() {
           try {
               const { data, error } = await getAllPosts(page);
               if (error) throw error;
-              console.log( data)
+              //console.log( data)
               const pageSize = 5;
               const calculatedTotalPages = Math.ceil(data.count / pageSize);
               setPosts(data.results);

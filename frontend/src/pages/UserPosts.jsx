@@ -26,7 +26,7 @@ export default function UserPosts() {
             try {
                 const { data, error } = await getUserPosts(user.id);
                 if (error) throw error;
-                console.log(data)
+                //console.log(data)
                 setPosts(data || []);
             } catch (err) {
                 console.error('Error fetching posts:', err);

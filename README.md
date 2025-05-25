@@ -3,10 +3,8 @@
 A full-stack blogging platform built with Django (backend) and React (frontend) with Supabase authentication.
 
 ## Live Demo 🌐
-
-- **Frontend**: [https://blogify-alpha-six.vercel.app/](https://blogify-alpha-six.vercel.app/)
 - **Backend**: [https://blogify-dat3.onrender.com/](https://blogify-dat3.onrender.com/)
-
+- **Frontend**: [https://blogify-alpha-six.vercel.app/](https://blogify-alpha-six.vercel.app/)
 > 💡 Note: The backend should be running before using the frontend.
 
 ## Features ✨
